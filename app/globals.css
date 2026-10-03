@@ -43,6 +43,12 @@
   --footer-whatsapp-bg: #20a86b;
   --footer-whatsapp-hover-bg: #168f59;
   --footer-whatsapp-text: #ffffff;
+
+  /* Founder WhatsApp button — independent control */
+  --founder-whatsapp-bg: #20a86b;
+--founder-whatsapp-hover-bg: #168f59;
+--founder-whatsapp-text: #ffffff;
+--founder-whatsapp-hover-text: #ffffff;
 }
 
 html {
@@ -357,7 +363,18 @@ h2 {
     #fff951 70%,
     #fffbd1 100%
   );}
-.founder-section { padding: 60px 0; background: #f7f8f9; }
+.founder-section { padding: 60px 0; background:
+  radial-gradient(
+    circle at 80% 10%,
+    rgba(255, 255, 255, 0.4),
+    transparent 35%
+  ),
+  linear-gradient(
+    135deg,
+    #fff951 0%,
+    #fff951 70%,
+    #fffbd1 100%
+  );}
 .final { background: var(--black); color: #fff; text-align: center; padding: 70px 20px; }
 
 /* PROBLEM CARDS */
@@ -523,6 +540,21 @@ input, select, textarea {
 }
 input:focus, select:focus, textarea:focus { border-color: #d2a600; box-shadow: 0 0 0 3px rgba(246, 195, 68, 0.12); }
 textarea { min-height: 55px; resize: vertical; }
+
+/* PHONE INPUT GROUP */
+.phone-input-group {
+  display: flex;
+  gap: 6px;
+}
+.country-select {
+  flex: 0 0 130px;
+  background: #f8f9fa;
+  font-weight: 600;
+}
+.phone-number-field {
+  flex: 1;
+}
+
 .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .check { display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 6px;   padding: 6px 9px; font-weight: 600; color: #515b64; font-size: 12px; cursor: pointer; }
 .check input { width: auto; }
@@ -670,6 +702,27 @@ footer { background: #07090b; color: #737c84; padding: 22px 0; font-size: 11px; 
   color: #fff;
 }
 
+.founder-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  background: var(--founder-whatsapp-bg);
+  color: var(--founder-whatsapp-text);
+}
+
+.founder-whatsapp:hover {
+  background: var(--founder-whatsapp-hover-bg);
+  color: var(--founder-whatsapp-hover-text);
+  transform: translateY(-1px);
+}
+
 .m-demo {
   background: var(--yellow);
   color: var(--black);
@@ -683,7 +736,15 @@ footer { background: #07090b; color: #737c84; padding: 22px 0; font-size: 11px; 
 body {
   padding-bottom: 60px;
 }
+.whatsapp-chat-button {
+  background: var(--whatsapp-chat-bg);
+  color: var(--whatsapp-chat-text);
+}
 
+.whatsapp-chat-button:hover {
+  background: var(--whatsapp-chat-hover-bg);
+  color: var(--whatsapp-chat-text);
+}
 @media (max-width: 768px) {
   .mobile-sticky-bar {
     padding-left: 10px;

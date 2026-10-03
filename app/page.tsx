@@ -12,8 +12,31 @@ export default function Home() {
   const [designation, setDesignation] = useState("");
   const [otherDesignation, setOtherDesignation] = useState("");
 
+  // Country code and phone number states
+  const [countryCode, setCountryCode] = useState("+91");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "");
+    let maxLength = 15;
+    if (countryCode === "+91") maxLength = 10;
+    else if (countryCode === "+1") maxLength = 10;
+    else if (countryCode === "+44") maxLength = 11;
+    else if (countryCode === "+61") maxLength = 9;
+    else if (countryCode === "+971") maxLength = 9;
+
+    if (val.length <= maxLength) {
+      setPhoneNumber(val);
+    }
+  };
+
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCountryCode(e.target.value);
+    setPhoneNumber("");
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,19 +54,20 @@ export default function Home() {
 
     const finalDesignation =
       designation === "Other" ? otherDesignation : designation;
-
+const emailValue = data.get("email");
     const lead = {
-      date: new Date().toLocaleString("en-IN"),
-      name: data.get("name"),
-      phone: data.get("phone"),
-      company: data.get("company"),
-      designation: finalDesignation,
-      business_type: data.get("business_type"),
-      projects: data.get("projects"),
-      turnover: data.get("turnover"),
-      requirements: requirements.join(", "),
-      challenge: data.get("challenge"),
-    };
+     date: new Date().toLocaleString("en-IN"),
+     name: data.get("name"),
+     phone: `${countryCode} ${phoneNumber}`,
+     email: emailValue ? emailValue : null, // Send null instead of "" if empty
+     company: data.get("company"),
+     designation: finalDesignation,
+     business_type: data.get("business_type"),
+     projects: data.get("projects"),
+    turnover: data.get("turnover"),
+    requirements: requirements.join(", "),
+    challenge: data.get("challenge"),
+};
 
     try {
       const response = await fetch("/api/lead", {
@@ -83,8 +107,8 @@ export default function Home() {
 
       console.log("Lead saved successfully:", result);
 
-      // Redirect only after the lead has been confirmed as saved.
-      window.location.href = "https://calendly.com/your-username/demo";
+      // Show message instead of redirecting to calendly
+      alert("Your Message sent");
     } catch (error) {
       console.error("Error submitting lead:", error);
 
@@ -499,51 +523,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ SECTION */}
-      <section className="faq-section">
-        <div className="container">
-          <div className="section-label center">Got Questions?</div>
-          <h2 className="center">Frequently Asked Questions</h2>
-
-          <div className="faq-list">
-            <div className="faq-item">
-              <button className="faq-question" onClick={() => toggleFaq(1)}>
-                <span>Is this software difficult for site engineers to learn?</span>
-                <span>{openFaq === 1 ? "−" : "+"}</span>
-              </button>
-              {openFaq === 1 && (
-                <div className="faq-answer">
-                  Not at all. We built it specifically with mobile-first simplicity so site supervisors can update daily progress in less than 2 minutes.
-                </div>
-              )}
-            </div>
-
-            <div className="faq-item">
-              <button className="faq-question" onClick={() => toggleFaq(2)}>
-                <span>Can I manage multiple construction sites simultaneously?</span>
-                <span>{openFaq === 2 ? "−" : "+"}</span>
-              </button>
-              {openFaq === 2 && (
-                <div className="faq-answer">
-                  Yes! You can switch between active project dashboards instantly to check materials, labor, and budget variances in one place.
-                </div>
-              )}
-            </div>
-
-            <div className="faq-item">
-              <button className="faq-question" onClick={() => toggleFaq(3)}>
-                <span>How does the AI assistant help my business?</span>
-                <span>{openFaq === 3 ? "−" : "+"}</span>
-              </button>
-              {openFaq === 3 && (
-                <div className="faq-answer">
-                  The AI analyzes your incoming logs and alerts you when material consumption spikes or deadlines slip, saving you hours of manual report review.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* DEMO BOOKING FORM */}
       <section className="form-section" id="demo">
@@ -625,8 +604,8 @@ export default function Home() {
 
               <div className="form-grid">
                 <div>
-                  <label>Phone Number *</label>
-                  <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required />
+                  <label>Email Address (Optional)</label>
+                  <input type="email" name="email" placeholder="you@company.com" />
                 </div>
                 <div>
                   <label>Company Name *</label>
@@ -635,6 +614,37 @@ export default function Home() {
               </div>
 
               <div className="form-grid">
+                <div>
+                  <label>Phone Number *</label>
+                  <div className="phone-input-group">
+                    <select
+                      value={countryCode}
+                      onChange={handleCountryChange}
+                      aria-label="Country Code"
+                      className="country-select"
+                    >
+                      <option value="+91">🇮🇳 India (+91)</option>
+                      <option value="+1">🇺🇸 US/Canada (+1)</option>
+                      <option value="+44">🇬🇧 UK (+44)</option>
+                      <option value="+61">🇦🇺 Australia (+61)</option>
+                      <option value="+971">🇦🇪 UAE (+971)</option>
+                      <option value="+65">🇸🇬 Singapore (+65)</option>
+                      <option value="+49">🇩🇪 Germany (+49)</option>
+                      <option value="+33">🇫🇷 France (+33)</option>
+                      <option value="+81">🇯🇵 Japan (+81)</option>
+                    </select>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Number"
+                      value={phoneNumber}
+                      onChange={handlePhoneChange}
+                      required
+                      className="phone-number-field"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label>Business Type *</label>
                   <select name="business_type" required defaultValue="">
@@ -648,6 +658,9 @@ export default function Home() {
                     <option>Other</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="form-grid">
                 <div>
                   <label>Active Projects *</label>
                   <select name="projects" required defaultValue="">
@@ -658,9 +671,6 @@ export default function Home() {
                     <option>50+</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="form-grid">
                 <div>
                   <label>Annual Business Turnover *</label>
                   <select name="turnover" defaultValue="">
@@ -679,9 +689,11 @@ export default function Home() {
               <div>
                 <label>What do you want to improve?</label>
                 <div className="checkbox-grid">
-                  <label className="check"><input type="checkbox" name="requirement" value="Material" /> Material Tracking</label>
-                  <label className="check"><input type="checkbox" name="requirement" value="Manpower" /> Manpower Costs</label>
-                  <label className="check"><input type="checkbox" name="requirement" value="Projects" /> Project Progress</label>
+                  <label className="check"><input type="checkbox" name="requirement" value="Material" /> Material Management</label>
+                  <label className="check"><input type="checkbox" name="requirement" value="Manpower" /> Manpower Management</label>
+                  <label className="check"><input type="checkbox" name="requirement" value="Projects" /> Project Management</label>
+                  <label className="check"><input type="checkbox" name="requirement" value="AI" /> Billing & Accounts</label>
+                  <label className="check"><input type="checkbox" name="requirement" value="AI" /> Cost Control</label>
                   <label className="check"><input type="checkbox" name="requirement" value="AI" /> AI Insights</label>
                 </div>
               </div>
@@ -695,6 +707,52 @@ export default function Home() {
                 BOOK MY FREE DEMO →
               </button>
             </form>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="faq-section">
+        <div className="container">
+          <div className="section-label center">Got Questions?</div>
+          <h2 className="center">Frequently Asked Questions</h2>
+
+          <div className="faq-list">
+            <div className="faq-item">
+              <button className="faq-question" onClick={() => toggleFaq(1)}>
+                <span>Is this software difficult for site engineers to learn?</span>
+                <span>{openFaq === 1 ? "−" : "+"}</span>
+              </button>
+              {openFaq === 1 && (
+                <div className="faq-answer">
+                  Not at all. We built it specifically with mobile-first simplicity so site supervisors can update daily progress in less than 2 minutes.
+                </div>
+              )}
+            </div>
+
+            <div className="faq-item">
+              <button className="faq-question" onClick={() => toggleFaq(2)}>
+                <span>Can I manage multiple construction sites simultaneously?</span>
+                <span>{openFaq === 2 ? "−" : "+"}</span>
+              </button>
+              {openFaq === 2 && (
+                <div className="faq-answer">
+                  Yes! You can switch between active project dashboards instantly to check materials, labor, and budget variances in one place.
+                </div>
+              )}
+            </div>
+
+            <div className="faq-item">
+              <button className="faq-question" onClick={() => toggleFaq(3)}>
+                <span>How does the AI assistant help my business?</span>
+                <span>{openFaq === 3 ? "−" : "+"}</span>
+              </button>
+              {openFaq === 3 && (
+                <div className="faq-answer">
+                  The AI analyzes your incoming logs and alerts you when material consumption spikes or deadlines slip, saving you hours of manual report review.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -722,10 +780,13 @@ export default function Home() {
               href="https://wa.me/919609806922?text=Hi%20Devendra%2C%20I%20want%20to%20know%20more%20about%20the%20AI%20construction%20software."
               target="_blank"
               rel="noopener noreferrer"
-              className="primary-btn"
-              style={{ background: "#fff951" }}
+              className="founder-whatsapp"
+              aria-label="Chat with me on WhatsApp"
             >
-              CHAT WITH ME ON WHATSAPP →
+              <svg className="sticky-whatsapp-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .17 5.33.17 11.89c0 2.09.55 4.13 1.59 5.93L.07 24l6.36-1.67a11.85 11.85 0 0 0 5.62 1.43h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.18-1.24-6.16-3.42-8.4zm-8.47 18.24h-.01a9.82 9.82 0 0 1-5.01-1.37l-.36-.21-3.77.99 1.01-3.67-.23-.38a9.85 9.85 0 0 1-1.51-5.19C2.17 6.45 6.6 2.02 12.06 2.02c2.65 0 5.14 1.03 7.01 2.91a9.84 9.84 0 0 1 2.9 7.01c0 5.46-4.43 9.89-9.92 9.89zm5.42-7.41c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.23-.65.08-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.08-.15-.68-1.64-.93-2.24-.25-.59-.5-.51-.68-.52-.18-.01-.38-.01-.58-.01-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.51s1.08 2.91 1.23 3.11c.15.2 2.13 3.25 5.16 4.55.72.31 1.28.49 1.72.63.72.23 1.37.2 1.89.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.08-.13-.28-.2-.58-.35z" />
+              </svg>
+              <span>CHAT WITH ME ON WHATSAPP →</span>
             </a>
           </div>
 
